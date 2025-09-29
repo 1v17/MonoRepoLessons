@@ -89,15 +89,33 @@ describe('Calculator', () => {
       expect(result.error).toBeUndefined();
     });
 
+    test('should handle unary plus', () => {
+      const result = calculator.calculate(['+', '5']);
+      expect(result.result).toBe(5);
+      expect(result.error).toBeUndefined();
+    });
+
     test('should handle unary minus in expression', () => {
       const result = calculator.calculate(['3', '+', '-', '2']);
       expect(result.result).toBe(1); // 3 + (-2) = 1
       expect(result.error).toBeUndefined();
     });
 
+    test('should handle unary plus in expression', () => {
+      const result = calculator.calculate(['3', '+', '+', '2']);
+      expect(result.result).toBe(5); // 3 + (+2) = 5
+      expect(result.error).toBeUndefined();
+    });
+
     test('should handle unary minus with parentheses', () => {
       const result = calculator.calculate(['-', '(', '2', '+', '3', ')']);
       expect(result.result).toBe(-5); // -(2 + 3) = -5
+      expect(result.error).toBeUndefined();
+    });
+
+    test('should handle unary plus with parentheses', () => {
+      const result = calculator.calculate(['+', '(', '2', '+', '3', ')']);
+      expect(result.result).toBe(5); // +(2 + 3) = 5
       expect(result.error).toBeUndefined();
     });
   });
@@ -144,6 +162,60 @@ describe('Calculator', () => {
     test('should handle unexpected token', () => {
       const result = calculator.calculate(['2', '+', '3', ')']);
       expect(result.error).toBe('Unexpected token: )');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle operator at end of expression', () => {
+      const result = calculator.calculate(['2', '+', '3', '+']);
+      expect(result.error).toBe('Unexpected end of expression');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle multiplication operator at end of expression', () => {
+      const result = calculator.calculate(['5', '*', '2', '*']);
+      expect(result.error).toBe('Unexpected end of expression');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle division operator at end of expression', () => {
+      const result = calculator.calculate(['10', '/', '2', '/']);
+      expect(result.error).toBe('Unexpected end of expression');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle subtraction operator at end of expression', () => {
+      const result = calculator.calculate(['7', '-', '3', '-']);
+      expect(result.error).toBe('Unexpected end of expression');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle missing opening parenthesis', () => {
+      const result = calculator.calculate(['2', '+', '3', ')']);
+      expect(result.error).toBe('Unexpected token: )');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle missing closing parenthesis', () => {
+      const result = calculator.calculate(['(', '2', '+', '3']);
+      expect(result.error).toBe('Missing closing parenthesis');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle missing closing parenthesis in nested expression', () => {
+      const result = calculator.calculate(['(', '2', '+', '(', '3', '*', '4', ')']);
+      expect(result.error).toBe('Missing closing parenthesis');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle missing opening parenthesis in nested expression', () => {
+      const result = calculator.calculate(['2', '+', '3', '*', '4', ')', ')']);
+      expect(result.error).toBe('Unexpected token: )');
+      expect(result.result).toBeUndefined();
+    });
+
+    test('should handle multiple missing closing parentheses', () => {
+      const result = calculator.calculate(['(', '(', '2', '+', '3']);
+      expect(result.error).toBe('Missing closing parenthesis');
       expect(result.result).toBeUndefined();
     });
 
